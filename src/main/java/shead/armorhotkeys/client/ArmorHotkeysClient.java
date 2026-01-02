@@ -180,21 +180,24 @@ public class ArmorHotkeysClient implements ClientModInitializer {
 
             int target = armorMemory.getOrDefault(slot, -1);
 
-            // If there's no saved slot or it's occupied, search for an empty slot
-            if (target == -1 || !client.player.currentScreenHandler.getSlot(target).getStack().isEmpty()) {
+            // If the saved slot exists and is empty, use it
+            if (target != -1 && client.player.currentScreenHandler.getSlot(target).getStack().isEmpty()) {
+                clickSlot(getArmorSlotId(slot), 0, SlotActionType.PICKUP);
+                clickSlot(target, 0, SlotActionType.PICKUP);
+                ensureEmptyCursor();
+                // armorMemory already contains the correct slot
+            } else {
+                // Otherwise, search for an empty slot
                 target = findEmptySlot();
+                if (target == -1) {
+                    client.player.sendMessage(Text.translatable("message.armorhotkeys.no_inventory_space"), true);
+                    continue;
+                }
+                clickSlot(getArmorSlotId(slot), 0, SlotActionType.PICKUP);
+                clickSlot(target, 0, SlotActionType.PICKUP);
+                ensureEmptyCursor();
+                armorMemory.put(slot, target); // Remember the new slot
             }
-
-            if (target == -1) {
-                client.player.sendMessage(Text.translatable("message.armorhotkeys.no_inventory_space"), true);
-                continue;
-            }
-
-            // Unequip the armor
-            clickSlot(getArmorSlotId(slot), 0, SlotActionType.PICKUP);
-            clickSlot(target, 0, SlotActionType.PICKUP);
-            ensureEmptyCursor();
-            armorMemory.put(slot, target);
         }
     }
 
@@ -315,12 +318,6 @@ public class ArmorHotkeysClient implements ClientModInitializer {
         if (alreadyHasElytra) {
             // If elytras are already equipped, use the saved slot or find the current elytra slot
             elytraSlot = armorMemory.getOrDefault(EquipmentSlot.CHEST, -1);
-
-            // If not found in memory, search for elytras in the inventory (they might already be equipped)
-            if (elytraSlot == -1) {
-                // Elytras are already equipped but not remembered in memory
-                // We'll find an empty slot for them later
-            }
         } else {
             // Look for elytras in the inventory
             for (int i = PLAYER_INVENTORY_START; i < PLAYER_INVENTORY_START + 27; i++) {
@@ -350,40 +347,56 @@ public class ArmorHotkeysClient implements ClientModInitializer {
         }
 
         if (alreadyHasElytra) {
-            // If elytras are already equipped, simply unequip all other armor
+            // If elytras are already equipped, simply unequip all other armor using saved slots
             for (EquipmentSlot slot : EquipmentSlot.values()) {
                 if (!slot.isArmorSlot() || slot == EquipmentSlot.CHEST) continue;
 
                 ItemStack equipped = client.player.getEquippedStack(slot);
                 if (!equipped.isEmpty()) {
-                    int emptySlot = findEmptySlot();
-                    if (emptySlot != -1) {
+                    int target = armorMemory.getOrDefault(slot, -1);
+
+                    // If saved slot exists and is empty - use it
+                    if (target != -1 && client.player.currentScreenHandler.getSlot(target).getStack().isEmpty()) {
                         clickSlot(getArmorSlotId(slot), 0, SlotActionType.PICKUP);
-                        clickSlot(emptySlot, 0, SlotActionType.PICKUP);
+                        clickSlot(target, 0, SlotActionType.PICKUP);
                         ensureEmptyCursor();
+                    } else {
+                        // Otherwise find empty slot and remember it
+                        target = findEmptySlot();
+                        if (target != -1) {
+                            clickSlot(getArmorSlotId(slot), 0, SlotActionType.PICKUP);
+                            clickSlot(target, 0, SlotActionType.PICKUP);
+                            ensureEmptyCursor();
+                            armorMemory.put(slot, target); // Remember new slot
+                        }
                     }
                 }
             }
         } else {
-            // If a chestplate is equipped or the slot is empty, perform a direct swap
+            // Elytras are not equipped yet
 
-            // 1. First, unequip all armor except CHEST (if any)
+            // 1. First, unequip all armor except CHEST (if any) using saved slots
             for (EquipmentSlot slot : EquipmentSlot.values()) {
                 if (!slot.isArmorSlot() || slot == EquipmentSlot.CHEST) continue;
 
                 ItemStack equipped = client.player.getEquippedStack(slot);
                 if (!equipped.isEmpty()) {
-                    // Look for a slot for this armor in memory or an empty slot
-                    int targetSlot = armorMemory.getOrDefault(slot, -1);
-                    if (targetSlot == -1 || !client.player.currentScreenHandler.getSlot(targetSlot).getStack().isEmpty()) {
-                        targetSlot = findEmptySlot();
-                    }
+                    int target = armorMemory.getOrDefault(slot, -1);
 
-                    if (targetSlot != -1) {
+                    // If saved slot exists and is empty - use it
+                    if (target != -1 && client.player.currentScreenHandler.getSlot(target).getStack().isEmpty()) {
                         clickSlot(getArmorSlotId(slot), 0, SlotActionType.PICKUP);
-                        clickSlot(targetSlot, 0, SlotActionType.PICKUP);
-                        armorMemory.put(slot, targetSlot);
+                        clickSlot(target, 0, SlotActionType.PICKUP);
                         ensureEmptyCursor();
+                    } else {
+                        // Otherwise find empty slot and remember it
+                        target = findEmptySlot();
+                        if (target != -1) {
+                            clickSlot(getArmorSlotId(slot), 0, SlotActionType.PICKUP);
+                            clickSlot(target, 0, SlotActionType.PICKUP);
+                            ensureEmptyCursor();
+                            armorMemory.put(slot, target); // Remember new slot
+                        }
                     }
                 }
             }
@@ -481,20 +494,46 @@ public class ArmorHotkeysClient implements ClientModInitializer {
         }
 
         // 3. Now equip the rest of the armor (helmet, leggings, boots)
-        // Handle HEAD, LEGS, FEET similarly to equipAllArmor()
+        // Handle HEAD, LEGS, FEET with priority to saved slots
         for (EquipmentSlot slot : new EquipmentSlot[]{EquipmentSlot.HEAD, EquipmentSlot.LEGS, EquipmentSlot.FEET}) {
             ItemStack currentlyEquipped = client.player.getEquippedStack(slot);
             if (currentlyEquipped.isEmpty()) {
-                // Find suitable armor in the inventory
+                // First check saved slot for this armor type
+                int memorySlot = armorMemory.getOrDefault(slot, -1);
+                if (memorySlot != -1) {
+                    ItemStack memoryStack = client.player.currentScreenHandler.getSlot(memorySlot).getStack();
+                    if (!memoryStack.isEmpty() && getSlot(memoryStack) == slot) {
+                        // Take from saved slot
+                        clickSlot(memorySlot, 0, SlotActionType.PICKUP);
+                        clickSlot(getArmorSlotId(slot), 0, SlotActionType.PICKUP);
+                        ensureEmptyCursor();
+                        continue; // Move to next armor slot
+                    }
+                }
+
+                // If not found in saved slot, search in inventory
                 for (int i = PLAYER_INVENTORY_START; i < PLAYER_INVENTORY_START + 27; i++) {
                     ItemStack stack = client.player.currentScreenHandler.getSlot(i).getStack();
                     if (!stack.isEmpty() && getSlot(stack) == slot) {
                         // Move the item to the armor slot
                         clickSlot(i, 0, SlotActionType.PICKUP);
                         clickSlot(getArmorSlotId(slot), 0, SlotActionType.PICKUP);
-                        armorMemory.put(slot, i);
+                        armorMemory.put(slot, i); // Remember where we took it from
                         ensureEmptyCursor();
                         break;
+                    }
+                }
+            } else {
+                // Armor is already equipped, ensure it's remembered
+                if (!armorMemory.containsKey(slot)) {
+                    // Try to find where this armor came from
+                    for (int i = PLAYER_INVENTORY_START; i < PLAYER_INVENTORY_START + 27; i++) {
+                        if (client.player.currentScreenHandler.getSlot(i).getStack().isEmpty()) {
+                            // If we find an empty slot that matches saved slot or first empty, remember it
+                            if (armorMemory.getOrDefault(slot, -1) == -1) {
+                                armorMemory.put(slot, i);
+                            }
+                        }
                     }
                 }
             }
