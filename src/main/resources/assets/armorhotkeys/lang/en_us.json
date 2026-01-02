@@ -1,0 +1,12 @@
+{
+  "key.category.minecraft.key.category.sheadarmorhotkeys": "Shead`s Armor Hotkeys",
+
+  "key.armorhotkeys.equip": "Equip all armor",
+  "key.armorhotkeys.swap_chest": "Change elytra/chestplate",
+  "key.armorhotkeys.elytra_only": "Equip only elytra",
+  "key.armorhotkeys.elytra_armor": "Equip elytra with armor",
+  "key.armorhotkeys.unequip_all": "Unequip all armor",
+
+  "message.armorhotkeys.no_inventory_space": "§cNo space in inventory!",
+  "message.armorhotkeys.no_elytra": "§cNo elytra in inventory!"
+}

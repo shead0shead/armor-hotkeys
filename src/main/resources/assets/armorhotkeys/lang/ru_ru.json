@@ -1,0 +1,12 @@
+{
+  "key.category.minecraft.key.category.sheadarmorhotkeys": "Shead`s Armor Hotkeys",
+
+  "key.armorhotkeys.equip": "Надеть всю броню",
+  "key.armorhotkeys.swap_chest": "Поменять элитры/нагрудник",
+  "key.armorhotkeys.elytra_only": "Надеть только элитры",
+  "key.armorhotkeys.elytra_armor": "Надеть элитры с броней",
+  "key.armorhotkeys.unequip_all": "Снять всю броню",
+
+  "message.armorhotkeys.no_inventory_space": "§cНет места в инвентаре!",
+  "message.armorhotkeys.no_elytra": "§cЭлитр нет в инвентаре!"
+}

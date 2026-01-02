@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "id": "sheadarmorhotkeys",
+  "version": "${version}",
+  "name": "Shead`s Armor Hotkeys",
+  "description": "Quick armor management with hotkeys - equip, swap, and unequip instantly",
+  "authors": ["Shead (Egor Konovalov)"],
+  "contact": {},
+  "license": "All Rights Reserved",
+  "icon": "assets/armorhotkeys/icon.png",
+  "environment": "client",
+  "entrypoints": {
+    "main": ["shead.armorhotkeys.ArmorHotkeysMod"],
+    "client": ["shead.armorhotkeys.client.ArmorHotkeysClient"]
+  },
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric-api": "*",
+    "minecraft": "${minecraft_version}"
+  }
+}
