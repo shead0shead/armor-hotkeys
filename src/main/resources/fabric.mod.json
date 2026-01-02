@@ -6,7 +6,7 @@
   "description": "Quick armor management with hotkeys - equip, swap, and unequip instantly",
   "authors": ["Shead (Egor Konovalov)"],
   "contact": {},
-  "license": "All Rights Reserved",
+  "license": "MIT",
   "icon": "assets/armorhotkeys/icon.png",
   "environment": "client",
   "entrypoints": {
