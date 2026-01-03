@@ -65,7 +65,7 @@ A Minecraft Fabric mod that adds convenient hotkeys for quickly managing your ar
 ### Advanced Features
 - **Inventory Memory**: The mod remembers where each armor piece was stored
 - **Smart Swapping**: Uses direct exchanges to minimize cursor item movement
-- **Error Handling**: Shows messages when items are missing or inventory is full
+- **Error Handling**: Shows messages and plays sounds when items are missing or inventory is full
 
 ## Configuration
 
