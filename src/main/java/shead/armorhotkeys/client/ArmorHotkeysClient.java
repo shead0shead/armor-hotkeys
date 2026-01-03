@@ -7,10 +7,12 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.screen.slot.SlotActionType;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import org.lwjgl.glfw.GLFW;
@@ -191,6 +193,7 @@ public class ArmorHotkeysClient implements ClientModInitializer {
                 target = findEmptySlot();
                 if (target == -1) {
                     client.player.sendMessage(Text.translatable("message.armorhotkeys.no_inventory_space"), true);
+                    playErrorSound();
                     continue;
                 }
                 clickSlot(getArmorSlotId(slot), 0, SlotActionType.PICKUP);
@@ -343,6 +346,7 @@ public class ArmorHotkeysClient implements ClientModInitializer {
         // If there are no elytras in the inventory or equipped
         if (elytraSlot == -1 && !alreadyHasElytra) {
             client.player.sendMessage(Text.translatable("message.armorhotkeys.no_elytra"), true);
+            playErrorSound();
             return;
         }
 
@@ -471,6 +475,7 @@ public class ArmorHotkeysClient implements ClientModInitializer {
         // If there are no elytras in the inventory or equipped
         if (elytraSlot == -1 && !alreadyHasElytra) {
             client.player.sendMessage(Text.translatable("message.armorhotkeys.no_elytra"), true);
+            playErrorSound();
             return;
         }
 
@@ -654,5 +659,15 @@ public class ArmorHotkeysClient implements ClientModInitializer {
                 item == Items.NETHERITE_BOOTS) return EquipmentSlot.FEET;
 
         return null;
+    }
+
+    /**
+     * Plays the error sound.
+     */
+    private void playErrorSound() {
+        if (client.player != null) {
+            PlayerEntity player = client.player;
+            player.playSound(SoundEvents.ENTITY_ITEM_BREAK.value(), 1.0F, 0.8F);
+        }
     }
 }
