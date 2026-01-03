@@ -130,7 +130,7 @@ Found a bug or have a feature request? Please report it on our [GitHub Issues](h
 
 ### MIT License
 
-Copyright © 2024 Egor Konovalov (Shead)
+Copyright © 2026 Egor Konovalov (shead0shead)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
