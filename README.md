@@ -54,6 +54,10 @@ A Minecraft Fabric mod that adds convenient hotkeys for quickly managing your ar
    - Download the latest `SheadsArmorHotkeys-1.1.1.jar` from [Releases](https://github.com/shead0shead/armor-hotkeys/releases)
    - Place it in your `.minecraft/mods` folder
 
+4. **Optional Dependencies**
+   - [ModMenu](https://modrinth.com/mod/modmenu) - For in-game configuration
+   - [Cloth Config](https://modrinth.com/mod/cloth-config) - Required for config GUI
+
 ## How to Use
 
 ### Basic Usage
@@ -65,7 +69,12 @@ A Minecraft Fabric mod that adds convenient hotkeys for quickly managing your ar
 ### Advanced Features
 - **Inventory Memory**: The mod remembers where each armor piece was stored
 - **Smart Swapping**: Uses direct exchanges to minimize cursor item movement
-- **Error Handling**: Shows messages and plays sounds when items are missing or inventory is full
+- **Empty Cursor**: Enable in config to prevent accidental item drops
+
+### Sound & Visual Feedback
+- **Success Sound**: Bell chime when operation completes
+- **Error Sound**: Item break sound for failures
+- **Notifications**: Action bar messages for inventory full/no elytra
 
 ## Configuration
 
@@ -74,6 +83,11 @@ Key bindings can be changed in Minecraft's standard Controls menu:
 2. Go to **Controls**
 3. Scroll to **"Shead's Armor Hotkeys"** category
 4. Rebind keys as desired
+
+To access advanced configuration::
+1. Install **ModMenu** and **Cloth Config**
+2. Press `Esc` → **Mods** → **Shead's Armor Hotkeys**
+3. Adjust settings in the config GUI
 
 ## Compatibility
 
