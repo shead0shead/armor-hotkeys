@@ -716,7 +716,8 @@ public class ArmorHotkeysClient implements ClientModInitializer {
     }
 
     /**
-     * Plays the success sound.
+     * Plays the success sound effect for armor operations.
+     * Used when armor is successfully equipped, unequipped, or swapped.
      */
     private void playSuccessSound() {
         if (client.player != null) {
@@ -726,7 +727,8 @@ public class ArmorHotkeysClient implements ClientModInitializer {
     }
 
     /**
-     * Plays the error sound.
+     * Plays the error sound effect for failed armor operations.
+     * Used when there's no space in inventory, no elytra available, or other failures.
      */
     private void playErrorSound() {
         if (client.player != null) {
