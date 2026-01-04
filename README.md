@@ -51,7 +51,7 @@ A Minecraft Fabric mod that adds convenient hotkeys for quickly managing your ar
    - Download [Fabric API 0.140.2+1.21.1](https://www.curseforge.com/minecraft/mc-mods/fabric-api) for Minecraft 1.21.1
 
 3. **Install Armor Hotkeys**
-   - Download the latest `SheadsArmorHotkeys-1.0.1.jar` from [Releases](https://github.com/shead0shead/armor-hotkeys/releases)
+   - Download the latest `SheadsArmorHotkeys-1.1.jar` from [Releases](https://github.com/shead0shead/armor-hotkeys/releases)
    - Place it in your `.minecraft/mods` folder
 
 ## How to Use
