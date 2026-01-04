@@ -86,6 +86,8 @@ public class ArmorHotkeysClient implements ClientModInitializer {
 
         ensureEmptyCursor();
 
+        boolean anyArmorEquipped = false;
+
         // For all armor slots (except CHEST)
         for (EquipmentSlot slot : EquipmentSlot.values()) {
             if (!slot.isArmorSlot() || slot == EquipmentSlot.CHEST) continue;
@@ -101,6 +103,7 @@ public class ArmorHotkeysClient implements ClientModInitializer {
                         clickSlot(getArmorSlotId(slot), 0, SlotActionType.PICKUP);
                         armorMemory.put(slot, i);
                         ensureEmptyCursor();
+                        anyArmorEquipped = true;
                         break;
                     }
                 }
@@ -121,6 +124,7 @@ public class ArmorHotkeysClient implements ClientModInitializer {
                     armorMemory.put(EquipmentSlot.CHEST, i);
                     ensureEmptyCursor();
                     foundChestplate = true;
+                    anyArmorEquipped = true;
                     break;
                 }
             }
@@ -134,6 +138,7 @@ public class ArmorHotkeysClient implements ClientModInitializer {
                         clickSlot(getArmorSlotId(EquipmentSlot.CHEST), 0, SlotActionType.PICKUP);
                         armorMemory.put(EquipmentSlot.CHEST, i);
                         ensureEmptyCursor();
+                        anyArmorEquipped = true;
                         break;
                     }
                 }
@@ -155,13 +160,18 @@ public class ArmorHotkeysClient implements ClientModInitializer {
                     armorMemory.put(EquipmentSlot.CHEST, i);
                     ensureEmptyCursor();
                     foundChestplate = true;
+                    anyArmorEquipped = true;
                     break;
                 }
             }
 
             // If no chestplate is found, leave the elytras equipped
         }
-        // If a chestplate is already equipped - do nothing
+
+        // Play success sound if any armor was equipped
+        if (anyArmorEquipped) {
+            playSuccessSound();
+        }
     }
 
     /**
@@ -173,6 +183,8 @@ public class ArmorHotkeysClient implements ClientModInitializer {
         if (client.player == null || client.interactionManager == null) return;
 
         ensureEmptyCursor();
+
+        boolean anyArmorUnequipped = false;
 
         for (EquipmentSlot slot : EquipmentSlot.values()) {
             if (!slot.isArmorSlot()) continue;
@@ -187,6 +199,7 @@ public class ArmorHotkeysClient implements ClientModInitializer {
                 clickSlot(getArmorSlotId(slot), 0, SlotActionType.PICKUP);
                 clickSlot(target, 0, SlotActionType.PICKUP);
                 ensureEmptyCursor();
+                anyArmorUnequipped = true;
                 // armorMemory already contains the correct slot
             } else {
                 // Otherwise, search for an empty slot
@@ -200,7 +213,13 @@ public class ArmorHotkeysClient implements ClientModInitializer {
                 clickSlot(target, 0, SlotActionType.PICKUP);
                 ensureEmptyCursor();
                 armorMemory.put(slot, target); // Remember the new slot
+                anyArmorUnequipped = true;
             }
+        }
+
+        // Play success sound if any armor was unequipped
+        if (anyArmorUnequipped) {
+            playSuccessSound();
         }
     }
 
@@ -215,6 +234,7 @@ public class ArmorHotkeysClient implements ClientModInitializer {
         ensureEmptyCursor();
 
         ItemStack currentlyEquipped = client.player.getEquippedStack(EquipmentSlot.CHEST);
+        boolean operationPerformed = false;
 
         if (currentlyEquipped.isEmpty()) {
             // If the slot is empty, first try to equip a chestplate
@@ -227,6 +247,7 @@ public class ArmorHotkeysClient implements ClientModInitializer {
                     armorMemory.put(EquipmentSlot.CHEST, i);
                     ensureEmptyCursor();
                     foundChestplate = true;
+                    operationPerformed = true;
                     break;
                 }
             }
@@ -240,6 +261,7 @@ public class ArmorHotkeysClient implements ClientModInitializer {
                         clickSlot(getArmorSlotId(EquipmentSlot.CHEST), 0, SlotActionType.PICKUP);
                         armorMemory.put(EquipmentSlot.CHEST, i);
                         ensureEmptyCursor();
+                        operationPerformed = true;
                         break;
                     }
                 }
@@ -265,6 +287,7 @@ public class ArmorHotkeysClient implements ClientModInitializer {
                         armorMemory.put(EquipmentSlot.CHEST, i);
                         ensureEmptyCursor();
                         foundAlternative = true;
+                        operationPerformed = true;
                         break;
                     }
                 }
@@ -282,6 +305,7 @@ public class ArmorHotkeysClient implements ClientModInitializer {
                         armorMemory.put(EquipmentSlot.CHEST, i);
                         ensureEmptyCursor();
                         foundAlternative = true;
+                        operationPerformed = true;
                         break;
                     }
                 }
@@ -295,8 +319,14 @@ public class ArmorHotkeysClient implements ClientModInitializer {
                     clickSlot(emptySlot, 0, SlotActionType.PICKUP);
                     armorMemory.put(EquipmentSlot.CHEST, emptySlot);
                     ensureEmptyCursor();
+                    operationPerformed = true;
                 }
             }
+        }
+
+        // Play success sound if operation was performed
+        if (operationPerformed) {
+            playSuccessSound();
         }
     }
 
@@ -350,6 +380,8 @@ public class ArmorHotkeysClient implements ClientModInitializer {
             return;
         }
 
+        boolean operationPerformed = false;
+
         if (alreadyHasElytra) {
             // If elytras are already equipped, simply unequip all other armor using saved slots
             for (EquipmentSlot slot : EquipmentSlot.values()) {
@@ -364,6 +396,7 @@ public class ArmorHotkeysClient implements ClientModInitializer {
                         clickSlot(getArmorSlotId(slot), 0, SlotActionType.PICKUP);
                         clickSlot(target, 0, SlotActionType.PICKUP);
                         ensureEmptyCursor();
+                        operationPerformed = true;
                     } else {
                         // Otherwise find empty slot and remember it
                         target = findEmptySlot();
@@ -372,6 +405,7 @@ public class ArmorHotkeysClient implements ClientModInitializer {
                             clickSlot(target, 0, SlotActionType.PICKUP);
                             ensureEmptyCursor();
                             armorMemory.put(slot, target); // Remember new slot
+                            operationPerformed = true;
                         }
                     }
                 }
@@ -392,6 +426,7 @@ public class ArmorHotkeysClient implements ClientModInitializer {
                         clickSlot(getArmorSlotId(slot), 0, SlotActionType.PICKUP);
                         clickSlot(target, 0, SlotActionType.PICKUP);
                         ensureEmptyCursor();
+                        operationPerformed = true;
                     } else {
                         // Otherwise find empty slot and remember it
                         target = findEmptySlot();
@@ -400,6 +435,7 @@ public class ArmorHotkeysClient implements ClientModInitializer {
                             clickSlot(target, 0, SlotActionType.PICKUP);
                             ensureEmptyCursor();
                             armorMemory.put(slot, target); // Remember new slot
+                            operationPerformed = true;
                         }
                     }
                 }
@@ -414,6 +450,7 @@ public class ArmorHotkeysClient implements ClientModInitializer {
                 clickSlot(getArmorSlotId(EquipmentSlot.CHEST), 0, SlotActionType.PICKUP);
                 armorMemory.put(EquipmentSlot.CHEST, elytraSlot);
                 ensureEmptyCursor();
+                operationPerformed = true;
             } else if (currentlyChest.getItem() != Items.ELYTRA) {
                 // If a chestplate is equipped, perform a direct swap
                 // Direct swap: chestplate <-> elytras
@@ -426,8 +463,14 @@ public class ArmorHotkeysClient implements ClientModInitializer {
 
                 armorMemory.put(EquipmentSlot.CHEST, elytraSlot);
                 ensureEmptyCursor();
+                operationPerformed = true;
             }
             // If elytras are already equipped - do nothing (this case is handled above)
+        }
+
+        // Play success sound if operation was performed
+        if (operationPerformed) {
+            playSuccessSound();
         }
     }
 
@@ -479,6 +522,8 @@ public class ArmorHotkeysClient implements ClientModInitializer {
             return;
         }
 
+        boolean operationPerformed = false;
+
         // 2. Handle elytras (if they are not already equipped)
         if (!alreadyHasElytra) {
             // If the CHEST slot is not empty (a chestplate is equipped), perform a direct swap
@@ -489,12 +534,14 @@ public class ArmorHotkeysClient implements ClientModInitializer {
                 clickSlot(elytraSlot, 0, SlotActionType.PICKUP);
                 armorMemory.put(EquipmentSlot.CHEST, elytraSlot);
                 ensureEmptyCursor();
+                operationPerformed = true;
             } else if (chestEquipped.isEmpty()) {
                 // If the CHEST slot is empty, simply equip the elytras
                 clickSlot(elytraSlot, 0, SlotActionType.PICKUP);
                 clickSlot(getArmorSlotId(EquipmentSlot.CHEST), 0, SlotActionType.PICKUP);
                 armorMemory.put(EquipmentSlot.CHEST, elytraSlot);
                 ensureEmptyCursor();
+                operationPerformed = true;
             }
         }
 
@@ -512,6 +559,7 @@ public class ArmorHotkeysClient implements ClientModInitializer {
                         clickSlot(memorySlot, 0, SlotActionType.PICKUP);
                         clickSlot(getArmorSlotId(slot), 0, SlotActionType.PICKUP);
                         ensureEmptyCursor();
+                        operationPerformed = true;
                         continue; // Move to next armor slot
                     }
                 }
@@ -525,6 +573,7 @@ public class ArmorHotkeysClient implements ClientModInitializer {
                         clickSlot(getArmorSlotId(slot), 0, SlotActionType.PICKUP);
                         armorMemory.put(slot, i); // Remember where we took it from
                         ensureEmptyCursor();
+                        operationPerformed = true;
                         break;
                     }
                 }
@@ -542,6 +591,11 @@ public class ArmorHotkeysClient implements ClientModInitializer {
                     }
                 }
             }
+        }
+
+        // Play success sound if operation was performed
+        if (operationPerformed) {
+            playSuccessSound();
         }
     }
 
@@ -659,6 +713,16 @@ public class ArmorHotkeysClient implements ClientModInitializer {
                 item == Items.NETHERITE_BOOTS) return EquipmentSlot.FEET;
 
         return null;
+    }
+
+    /**
+     * Plays the success sound.
+     */
+    private void playSuccessSound() {
+        if (client.player != null) {
+            PlayerEntity player = client.player;
+            player.playSound(SoundEvents.BLOCK_NOTE_BLOCK_BELL.value(), 0.8F, 1.0F);
+        }
     }
 
     /**
