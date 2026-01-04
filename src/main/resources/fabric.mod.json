@@ -11,7 +11,8 @@
   "environment": "client",
   "entrypoints": {
     "main": ["shead.armorhotkeys.ArmorHotkeysMod"],
-    "client": ["shead.armorhotkeys.client.ArmorHotkeysClient"]
+    "client": ["shead.armorhotkeys.client.ArmorHotkeysClient"],
+    "modmenu": ["shead.armorhotkeys.config.ModMenuIntegration"]
   },
   "depends": {
     "fabricloader": ">=${loader_version}",
