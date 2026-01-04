@@ -689,7 +689,8 @@ public class ArmorHotkeysClient implements ClientModInitializer {
                 item == Items.IRON_HELMET ||
                 item == Items.GOLDEN_HELMET ||
                 item == Items.DIAMOND_HELMET ||
-                item == Items.NETHERITE_HELMET) return EquipmentSlot.HEAD;
+                item == Items.NETHERITE_HELMET ||
+                item == Items.TURTLE_HELMET) return EquipmentSlot.HEAD;
 
         // Chestplates
         if (item == Items.LEATHER_CHESTPLATE ||
