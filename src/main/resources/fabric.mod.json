@@ -5,7 +5,10 @@
   "name": "Shead`s Armor Hotkeys",
   "description": "Quick armor management with hotkeys - equip, swap, and unequip instantly",
   "authors": ["Shead (Egor Konovalov)"],
-  "contact": {},
+  "contact": {
+    "homepage": "https://github.com/shead0shead/armor-hotkeys",
+    "issues": "https://github.com/shead0shead/armor-hotkeys/issues"
+  },
   "license": "MIT",
   "icon": "assets/armorhotkeys/icon.png",
   "environment": "client",
