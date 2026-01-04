@@ -16,11 +16,15 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import org.lwjgl.glfw.GLFW;
+import shead.armorhotkeys.ArmorHotkeysMod;
+import shead.armorhotkeys.config.ArmorHotkeysConfig;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class ArmorHotkeysClient implements ClientModInitializer {
+
+    private static final ArmorHotkeysConfig config = ArmorHotkeysMod.config;
 
     public static final KeyBinding.Category KEY_CATEGORY = KeyBinding.Category.create(Identifier.of("key.category.sheadarmorhotkeys"));
     private static KeyBinding EQUIP_ARMOR, SWAP_CHEST, ELYTRA_ONLY, ELYTRA_ARMOR, UNEQUIP_ALL;
@@ -34,45 +38,59 @@ public class ArmorHotkeysClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
-        EQUIP_ARMOR = KeyBindingHelper.registerKeyBinding(new KeyBinding(
-                "key.armorhotkeys.equip",
-                InputUtil.Type.KEYSYM,
-                GLFW.GLFW_KEY_Z,
-                KEY_CATEGORY
-        ));
-        SWAP_CHEST = KeyBindingHelper.registerKeyBinding(new KeyBinding(
-                "key.armorhotkeys.swap_chest",
-                InputUtil.Type.KEYSYM,
-                GLFW.GLFW_KEY_X,
-                KEY_CATEGORY
-        ));
-        ELYTRA_ONLY = KeyBindingHelper.registerKeyBinding(new KeyBinding(
-                "key.armorhotkeys.elytra_only",
-                InputUtil.Type.KEYSYM,
-                GLFW.GLFW_KEY_C,
-                KEY_CATEGORY
-        ));
-        ELYTRA_ARMOR = KeyBindingHelper.registerKeyBinding(new KeyBinding(
-                "key.armorhotkeys.elytra_armor",
-                InputUtil.Type.KEYSYM,
-                GLFW.GLFW_KEY_V,
-                KEY_CATEGORY
-        ));
-        UNEQUIP_ALL = KeyBindingHelper.registerKeyBinding(new KeyBinding(
-                "key.armorhotkeys.unequip_all",
-                InputUtil.Type.KEYSYM,
-                GLFW.GLFW_KEY_B,
-                KEY_CATEGORY
-        ));
+        if (config.enableEquipAllKey) {
+            EQUIP_ARMOR = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+                    "key.armorhotkeys.equip",
+                    InputUtil.Type.KEYSYM,
+                    GLFW.GLFW_KEY_Z,
+                    KEY_CATEGORY
+            ));
+        }
+
+        if (config.enableSwapChestKey) {
+            SWAP_CHEST = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+                    "key.armorhotkeys.swap_chest",
+                    InputUtil.Type.KEYSYM,
+                    GLFW.GLFW_KEY_X,
+                    KEY_CATEGORY
+            ));
+        }
+
+        if (config.enableElytraOnlyKey) {
+            ELYTRA_ONLY = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+                    "key.armorhotkeys.elytra_only",
+                    InputUtil.Type.KEYSYM,
+                    GLFW.GLFW_KEY_C,
+                    KEY_CATEGORY
+            ));
+        }
+
+        if (config.enableElytraArmorKey) {
+            ELYTRA_ARMOR = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+                    "key.armorhotkeys.elytra_armor",
+                    InputUtil.Type.KEYSYM,
+                    GLFW.GLFW_KEY_V,
+                    KEY_CATEGORY
+            ));
+        }
+
+        if (config.enableUnequipAllKey) {
+            UNEQUIP_ALL = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+                    "key.armorhotkeys.unequip_all",
+                    InputUtil.Type.KEYSYM,
+                    GLFW.GLFW_KEY_B,
+                    KEY_CATEGORY
+            ));
+        }
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             if (client.player == null || client.interactionManager == null) return;
 
-            if (EQUIP_ARMOR.wasPressed()) equipAllArmor();
-            if (UNEQUIP_ALL.wasPressed()) unequipAll();
-            if (SWAP_CHEST.wasPressed()) swapChest();
-            if (ELYTRA_ONLY.wasPressed()) elytraOnly();
-            if (ELYTRA_ARMOR.wasPressed()) elytraArmor();
+            if (config.enableEquipAllKey && EQUIP_ARMOR.wasPressed()) equipAllArmor();
+            if (config.enableUnequipAllKey && UNEQUIP_ALL.wasPressed()) unequipAll();
+            if (config.enableSwapChestKey && SWAP_CHEST.wasPressed()) swapChest();
+            if (config.enableElytraOnlyKey && ELYTRA_ONLY.wasPressed()) elytraOnly();
+            if (config.enableElytraArmorKey && ELYTRA_ARMOR.wasPressed()) elytraArmor();
         });
     }
 
@@ -84,7 +102,9 @@ public class ArmorHotkeysClient implements ClientModInitializer {
     private void equipAllArmor() {
         if (client.player == null || client.interactionManager == null) return;
 
-        ensureEmptyCursor();
+        if (config.requireEmptyCursor) {
+            ensureEmptyCursor();
+        }
 
         boolean anyArmorEquipped = false;
 
@@ -101,8 +121,12 @@ public class ArmorHotkeysClient implements ClientModInitializer {
                         // Move the item to the armor slot
                         clickSlot(i, 0, SlotActionType.PICKUP);
                         clickSlot(getArmorSlotId(slot), 0, SlotActionType.PICKUP);
-                        armorMemory.put(slot, i);
-                        ensureEmptyCursor();
+                        if (config.enableMemorySystem) {
+                            armorMemory.put(slot, i);
+                        }
+                        if (config.requireEmptyCursor) {
+                            ensureEmptyCursor();
+                        }
                         anyArmorEquipped = true;
                         break;
                     }
@@ -121,8 +145,12 @@ public class ArmorHotkeysClient implements ClientModInitializer {
                 if (!stack.isEmpty() && getSlot(stack) == EquipmentSlot.CHEST && stack.getItem() != Items.ELYTRA) {
                     clickSlot(i, 0, SlotActionType.PICKUP);
                     clickSlot(getArmorSlotId(EquipmentSlot.CHEST), 0, SlotActionType.PICKUP);
-                    armorMemory.put(EquipmentSlot.CHEST, i);
-                    ensureEmptyCursor();
+                    if (config.enableMemorySystem) {
+                        armorMemory.put(EquipmentSlot.CHEST, i);
+                    }
+                    if (config.requireEmptyCursor) {
+                        ensureEmptyCursor();
+                    }
                     foundChestplate = true;
                     anyArmorEquipped = true;
                     break;
@@ -136,8 +164,12 @@ public class ArmorHotkeysClient implements ClientModInitializer {
                     if (!stack.isEmpty() && stack.getItem() == Items.ELYTRA) {
                         clickSlot(i, 0, SlotActionType.PICKUP);
                         clickSlot(getArmorSlotId(EquipmentSlot.CHEST), 0, SlotActionType.PICKUP);
-                        armorMemory.put(EquipmentSlot.CHEST, i);
-                        ensureEmptyCursor();
+                        if (config.enableMemorySystem) {
+                            armorMemory.put(EquipmentSlot.CHEST, i);
+                        }
+                        if (config.requireEmptyCursor) {
+                            ensureEmptyCursor();
+                        }
                         anyArmorEquipped = true;
                         break;
                     }
@@ -157,19 +189,22 @@ public class ArmorHotkeysClient implements ClientModInitializer {
                     // Now elytras are in the cursor, place them in the slot where the chestplate was
                     clickSlot(i, 0, SlotActionType.PICKUP);
 
-                    armorMemory.put(EquipmentSlot.CHEST, i);
-                    ensureEmptyCursor();
+                    if (config.enableMemorySystem) {
+                        armorMemory.put(EquipmentSlot.CHEST, i);
+                    }
+                    if (config.requireEmptyCursor) {
+                        ensureEmptyCursor();
+                    }
                     foundChestplate = true;
                     anyArmorEquipped = true;
                     break;
                 }
             }
-
             // If no chestplate is found, leave the elytras equipped
         }
 
         // Play success sound if any armor was equipped
-        if (anyArmorEquipped) {
+        if (anyArmorEquipped && config.enableSuccessSound) {
             playSuccessSound();
         }
     }
@@ -182,7 +217,9 @@ public class ArmorHotkeysClient implements ClientModInitializer {
     private void unequipAll() {
         if (client.player == null || client.interactionManager == null) return;
 
-        ensureEmptyCursor();
+        if (config.requireEmptyCursor) {
+            ensureEmptyCursor();
+        }
 
         boolean anyArmorUnequipped = false;
 
@@ -192,33 +229,46 @@ public class ArmorHotkeysClient implements ClientModInitializer {
             ItemStack equipped = client.player.getEquippedStack(slot);
             if (equipped.isEmpty()) continue;
 
-            int target = armorMemory.getOrDefault(slot, -1);
+            int target = -1;
+            if (config.enableMemorySystem) {
+                target = armorMemory.getOrDefault(slot, -1);
+            }
 
             // If the saved slot exists and is empty, use it
             if (target != -1 && client.player.currentScreenHandler.getSlot(target).getStack().isEmpty()) {
                 clickSlot(getArmorSlotId(slot), 0, SlotActionType.PICKUP);
                 clickSlot(target, 0, SlotActionType.PICKUP);
-                ensureEmptyCursor();
+                if (config.requireEmptyCursor) {
+                    ensureEmptyCursor();
+                }
                 anyArmorUnequipped = true;
                 // armorMemory already contains the correct slot
             } else {
                 // Otherwise, search for an empty slot
                 target = findEmptySlot();
                 if (target == -1) {
-                    client.player.sendMessage(Text.translatable("message.armorhotkeys.no_inventory_space"), true);
-                    playErrorSound();
+                    if (config.showNotifications) {
+                        client.player.sendMessage(Text.translatable("message.armorhotkeys.no_inventory_space"), true);
+                    }
+                    if (config.enableErrorSound) {
+                        playErrorSound();
+                    }
                     continue;
                 }
                 clickSlot(getArmorSlotId(slot), 0, SlotActionType.PICKUP);
                 clickSlot(target, 0, SlotActionType.PICKUP);
-                ensureEmptyCursor();
-                armorMemory.put(slot, target); // Remember the new slot
+                if (config.requireEmptyCursor) {
+                    ensureEmptyCursor();
+                }
+                if (config.enableMemorySystem) {
+                    armorMemory.put(slot, target);
+                }
                 anyArmorUnequipped = true;
             }
         }
 
         // Play success sound if any armor was unequipped
-        if (anyArmorUnequipped) {
+        if (anyArmorUnequipped && config.enableSuccessSound) {
             playSuccessSound();
         }
     }
@@ -231,7 +281,9 @@ public class ArmorHotkeysClient implements ClientModInitializer {
     private void swapChest() {
         if (client.player == null || client.interactionManager == null) return;
 
-        ensureEmptyCursor();
+        if (config.requireEmptyCursor) {
+            ensureEmptyCursor();
+        }
 
         ItemStack currentlyEquipped = client.player.getEquippedStack(EquipmentSlot.CHEST);
         boolean operationPerformed = false;
@@ -244,8 +296,12 @@ public class ArmorHotkeysClient implements ClientModInitializer {
                 if (!stack.isEmpty() && getSlot(stack) == EquipmentSlot.CHEST && stack.getItem() != Items.ELYTRA) {
                     clickSlot(i, 0, SlotActionType.PICKUP);
                     clickSlot(getArmorSlotId(EquipmentSlot.CHEST), 0, SlotActionType.PICKUP);
-                    armorMemory.put(EquipmentSlot.CHEST, i);
-                    ensureEmptyCursor();
+                    if (config.enableMemorySystem) {
+                        armorMemory.put(EquipmentSlot.CHEST, i);
+                    }
+                    if (config.requireEmptyCursor) {
+                        ensureEmptyCursor();
+                    }
                     foundChestplate = true;
                     operationPerformed = true;
                     break;
@@ -259,8 +315,12 @@ public class ArmorHotkeysClient implements ClientModInitializer {
                     if (!stack.isEmpty() && stack.getItem() == Items.ELYTRA) {
                         clickSlot(i, 0, SlotActionType.PICKUP);
                         clickSlot(getArmorSlotId(EquipmentSlot.CHEST), 0, SlotActionType.PICKUP);
-                        armorMemory.put(EquipmentSlot.CHEST, i);
-                        ensureEmptyCursor();
+                        if (config.enableMemorySystem) {
+                            armorMemory.put(EquipmentSlot.CHEST, i);
+                        }
+                        if (config.requireEmptyCursor) {
+                            ensureEmptyCursor();
+                        }
                         operationPerformed = true;
                         break;
                     }
@@ -284,8 +344,12 @@ public class ArmorHotkeysClient implements ClientModInitializer {
                         // Now elytras are in the cursor, place them in the slot where the chestplate was
                         clickSlot(i, 0, SlotActionType.PICKUP);
 
-                        armorMemory.put(EquipmentSlot.CHEST, i);
-                        ensureEmptyCursor();
+                        if (config.enableMemorySystem) {
+                            armorMemory.put(EquipmentSlot.CHEST, i);
+                        }
+                        if (config.requireEmptyCursor) {
+                            ensureEmptyCursor();
+                        }
                         foundAlternative = true;
                         operationPerformed = true;
                         break;
@@ -302,8 +366,12 @@ public class ArmorHotkeysClient implements ClientModInitializer {
                         // Now the chestplate is in the cursor, place it in the slot where the elytras were
                         clickSlot(i, 0, SlotActionType.PICKUP);
 
-                        armorMemory.put(EquipmentSlot.CHEST, i);
-                        ensureEmptyCursor();
+                        if (config.enableMemorySystem) {
+                            armorMemory.put(EquipmentSlot.CHEST, i);
+                        }
+                        if (config.requireEmptyCursor) {
+                            ensureEmptyCursor();
+                        }
                         foundAlternative = true;
                         operationPerformed = true;
                         break;
@@ -317,15 +385,19 @@ public class ArmorHotkeysClient implements ClientModInitializer {
                 if (emptySlot != -1) {
                     clickSlot(getArmorSlotId(EquipmentSlot.CHEST), 0, SlotActionType.PICKUP);
                     clickSlot(emptySlot, 0, SlotActionType.PICKUP);
-                    armorMemory.put(EquipmentSlot.CHEST, emptySlot);
-                    ensureEmptyCursor();
+                    if (config.enableMemorySystem) {
+                        armorMemory.put(EquipmentSlot.CHEST, emptySlot);
+                    }
+                    if (config.requireEmptyCursor) {
+                        ensureEmptyCursor();
+                    }
                     operationPerformed = true;
                 }
             }
         }
 
         // Play success sound if operation was performed
-        if (operationPerformed) {
+        if (operationPerformed && config.enableSuccessSound) {
             playSuccessSound();
         }
     }
@@ -339,7 +411,9 @@ public class ArmorHotkeysClient implements ClientModInitializer {
     private void elytraOnly() {
         if (client.player == null || client.interactionManager == null) return;
 
-        ensureEmptyCursor();
+        if (config.requireEmptyCursor) {
+            ensureEmptyCursor();
+        }
 
         // Check if elytras are already equipped
         ItemStack chestEquipped = client.player.getEquippedStack(EquipmentSlot.CHEST);
@@ -350,7 +424,9 @@ public class ArmorHotkeysClient implements ClientModInitializer {
 
         if (alreadyHasElytra) {
             // If elytras are already equipped, use the saved slot or find the current elytra slot
-            elytraSlot = armorMemory.getOrDefault(EquipmentSlot.CHEST, -1);
+            if (config.enableMemorySystem) {
+                elytraSlot = armorMemory.getOrDefault(EquipmentSlot.CHEST, -1);
+            }
         } else {
             // Look for elytras in the inventory
             for (int i = PLAYER_INVENTORY_START; i < PLAYER_INVENTORY_START + 27; i++) {
@@ -375,8 +451,12 @@ public class ArmorHotkeysClient implements ClientModInitializer {
 
         // If there are no elytras in the inventory or equipped
         if (elytraSlot == -1 && !alreadyHasElytra) {
-            client.player.sendMessage(Text.translatable("message.armorhotkeys.no_elytra"), true);
-            playErrorSound();
+            if (config.showNotifications) {
+                client.player.sendMessage(Text.translatable("message.armorhotkeys.no_elytra"), true);
+            }
+            if (config.enableErrorSound) {
+                playErrorSound();
+            }
             return;
         }
 
@@ -389,13 +469,18 @@ public class ArmorHotkeysClient implements ClientModInitializer {
 
                 ItemStack equipped = client.player.getEquippedStack(slot);
                 if (!equipped.isEmpty()) {
-                    int target = armorMemory.getOrDefault(slot, -1);
+                    int target = -1;
+                    if (config.enableMemorySystem) {
+                        target = armorMemory.getOrDefault(slot, -1);
+                    }
 
                     // If saved slot exists and is empty - use it
                     if (target != -1 && client.player.currentScreenHandler.getSlot(target).getStack().isEmpty()) {
                         clickSlot(getArmorSlotId(slot), 0, SlotActionType.PICKUP);
                         clickSlot(target, 0, SlotActionType.PICKUP);
-                        ensureEmptyCursor();
+                        if (config.requireEmptyCursor) {
+                            ensureEmptyCursor();
+                        }
                         operationPerformed = true;
                     } else {
                         // Otherwise find empty slot and remember it
@@ -403,8 +488,12 @@ public class ArmorHotkeysClient implements ClientModInitializer {
                         if (target != -1) {
                             clickSlot(getArmorSlotId(slot), 0, SlotActionType.PICKUP);
                             clickSlot(target, 0, SlotActionType.PICKUP);
-                            ensureEmptyCursor();
-                            armorMemory.put(slot, target); // Remember new slot
+                            if (config.requireEmptyCursor) {
+                                ensureEmptyCursor();
+                            }
+                            if (config.enableMemorySystem) {
+                                armorMemory.put(slot, target);
+                            }
                             operationPerformed = true;
                         }
                     }
@@ -419,13 +508,17 @@ public class ArmorHotkeysClient implements ClientModInitializer {
 
                 ItemStack equipped = client.player.getEquippedStack(slot);
                 if (!equipped.isEmpty()) {
-                    int target = armorMemory.getOrDefault(slot, -1);
+                    int target = -1;
+                    if (config.enableMemorySystem) {
+                        target = armorMemory.getOrDefault(slot, -1);
+                    }
 
-                    // If saved slot exists and is empty - use it
                     if (target != -1 && client.player.currentScreenHandler.getSlot(target).getStack().isEmpty()) {
                         clickSlot(getArmorSlotId(slot), 0, SlotActionType.PICKUP);
                         clickSlot(target, 0, SlotActionType.PICKUP);
-                        ensureEmptyCursor();
+                        if (config.requireEmptyCursor) {
+                            ensureEmptyCursor();
+                        }
                         operationPerformed = true;
                     } else {
                         // Otherwise find empty slot and remember it
@@ -433,8 +526,12 @@ public class ArmorHotkeysClient implements ClientModInitializer {
                         if (target != -1) {
                             clickSlot(getArmorSlotId(slot), 0, SlotActionType.PICKUP);
                             clickSlot(target, 0, SlotActionType.PICKUP);
-                            ensureEmptyCursor();
-                            armorMemory.put(slot, target); // Remember new slot
+                            if (config.requireEmptyCursor) {
+                                ensureEmptyCursor();
+                            }
+                            if (config.enableMemorySystem) {
+                                armorMemory.put(slot, target);
+                            }
                             operationPerformed = true;
                         }
                     }
@@ -448,8 +545,12 @@ public class ArmorHotkeysClient implements ClientModInitializer {
                 // If the CHEST slot is empty, simply equip the elytras
                 clickSlot(elytraSlot, 0, SlotActionType.PICKUP);
                 clickSlot(getArmorSlotId(EquipmentSlot.CHEST), 0, SlotActionType.PICKUP);
-                armorMemory.put(EquipmentSlot.CHEST, elytraSlot);
-                ensureEmptyCursor();
+                if (config.enableMemorySystem) {
+                    armorMemory.put(EquipmentSlot.CHEST, elytraSlot);
+                }
+                if (config.requireEmptyCursor) {
+                    ensureEmptyCursor();
+                }
                 operationPerformed = true;
             } else if (currentlyChest.getItem() != Items.ELYTRA) {
                 // If a chestplate is equipped, perform a direct swap
@@ -461,15 +562,19 @@ public class ArmorHotkeysClient implements ClientModInitializer {
                 // Now the chestplate is in the cursor, place it in the slot where the elytras were
                 clickSlot(elytraSlot, 0, SlotActionType.PICKUP);
 
-                armorMemory.put(EquipmentSlot.CHEST, elytraSlot);
-                ensureEmptyCursor();
+                if (config.enableMemorySystem) {
+                    armorMemory.put(EquipmentSlot.CHEST, elytraSlot);
+                }
+                if (config.requireEmptyCursor) {
+                    ensureEmptyCursor();
+                }
                 operationPerformed = true;
             }
             // If elytras are already equipped - do nothing (this case is handled above)
         }
 
         // Play success sound if operation was performed
-        if (operationPerformed) {
+        if (operationPerformed && config.enableSuccessSound) {
             playSuccessSound();
         }
     }
@@ -481,7 +586,9 @@ public class ArmorHotkeysClient implements ClientModInitializer {
     private void elytraArmor() {
         if (client.player == null || client.interactionManager == null) return;
 
-        ensureEmptyCursor();
+        if (config.requireEmptyCursor) {
+            ensureEmptyCursor();
+        }
 
         // 1. First, find elytras
         int elytraSlot = -1;
@@ -490,7 +597,9 @@ public class ArmorHotkeysClient implements ClientModInitializer {
         ItemStack chestEquipped = client.player.getEquippedStack(EquipmentSlot.CHEST);
         if (!chestEquipped.isEmpty() && chestEquipped.getItem() == Items.ELYTRA) {
             alreadyHasElytra = true;
-            elytraSlot = armorMemory.getOrDefault(EquipmentSlot.CHEST, -1);
+            if (config.enableMemorySystem) {
+                elytraSlot = armorMemory.getOrDefault(EquipmentSlot.CHEST, -1);
+            }
         }
 
         if (!alreadyHasElytra) {
@@ -517,8 +626,12 @@ public class ArmorHotkeysClient implements ClientModInitializer {
 
         // If there are no elytras in the inventory or equipped
         if (elytraSlot == -1 && !alreadyHasElytra) {
-            client.player.sendMessage(Text.translatable("message.armorhotkeys.no_elytra"), true);
-            playErrorSound();
+            if (config.showNotifications) {
+                client.player.sendMessage(Text.translatable("message.armorhotkeys.no_elytra"), true);
+            }
+            if (config.enableErrorSound) {
+                playErrorSound();
+            }
             return;
         }
 
@@ -532,15 +645,23 @@ public class ArmorHotkeysClient implements ClientModInitializer {
                 clickSlot(elytraSlot, 0, SlotActionType.PICKUP);
                 clickSlot(getArmorSlotId(EquipmentSlot.CHEST), 0, SlotActionType.PICKUP);
                 clickSlot(elytraSlot, 0, SlotActionType.PICKUP);
-                armorMemory.put(EquipmentSlot.CHEST, elytraSlot);
-                ensureEmptyCursor();
+                if (config.enableMemorySystem) {
+                    armorMemory.put(EquipmentSlot.CHEST, elytraSlot);
+                }
+                if (config.requireEmptyCursor) {
+                    ensureEmptyCursor();
+                }
                 operationPerformed = true;
             } else if (chestEquipped.isEmpty()) {
                 // If the CHEST slot is empty, simply equip the elytras
                 clickSlot(elytraSlot, 0, SlotActionType.PICKUP);
                 clickSlot(getArmorSlotId(EquipmentSlot.CHEST), 0, SlotActionType.PICKUP);
-                armorMemory.put(EquipmentSlot.CHEST, elytraSlot);
-                ensureEmptyCursor();
+                if (config.enableMemorySystem) {
+                    armorMemory.put(EquipmentSlot.CHEST, elytraSlot);
+                }
+                if (config.requireEmptyCursor) {
+                    ensureEmptyCursor();
+                }
                 operationPerformed = true;
             }
         }
@@ -551,14 +672,20 @@ public class ArmorHotkeysClient implements ClientModInitializer {
             ItemStack currentlyEquipped = client.player.getEquippedStack(slot);
             if (currentlyEquipped.isEmpty()) {
                 // First check saved slot for this armor type
-                int memorySlot = armorMemory.getOrDefault(slot, -1);
+                int memorySlot = -1;
+                if (config.enableMemorySystem) {
+                    memorySlot = armorMemory.getOrDefault(slot, -1);
+                }
+
                 if (memorySlot != -1) {
                     ItemStack memoryStack = client.player.currentScreenHandler.getSlot(memorySlot).getStack();
                     if (!memoryStack.isEmpty() && getSlot(memoryStack) == slot) {
                         // Take from saved slot
                         clickSlot(memorySlot, 0, SlotActionType.PICKUP);
                         clickSlot(getArmorSlotId(slot), 0, SlotActionType.PICKUP);
-                        ensureEmptyCursor();
+                        if (config.requireEmptyCursor) {
+                            ensureEmptyCursor();
+                        }
                         operationPerformed = true;
                         continue; // Move to next armor slot
                     }
@@ -571,15 +698,19 @@ public class ArmorHotkeysClient implements ClientModInitializer {
                         // Move the item to the armor slot
                         clickSlot(i, 0, SlotActionType.PICKUP);
                         clickSlot(getArmorSlotId(slot), 0, SlotActionType.PICKUP);
-                        armorMemory.put(slot, i); // Remember where we took it from
-                        ensureEmptyCursor();
+                        if (config.enableMemorySystem) {
+                            armorMemory.put(slot, i);
+                        }
+                        if (config.requireEmptyCursor) {
+                            ensureEmptyCursor();
+                        }
                         operationPerformed = true;
                         break;
                     }
                 }
             } else {
                 // Armor is already equipped, ensure it's remembered
-                if (!armorMemory.containsKey(slot)) {
+                if (config.enableMemorySystem && !armorMemory.containsKey(slot)) {
                     // Try to find where this armor came from
                     for (int i = PLAYER_INVENTORY_START; i < PLAYER_INVENTORY_START + 27; i++) {
                         if (client.player.currentScreenHandler.getSlot(i).getStack().isEmpty()) {
@@ -594,7 +725,7 @@ public class ArmorHotkeysClient implements ClientModInitializer {
         }
 
         // Play success sound if operation was performed
-        if (operationPerformed) {
+        if (operationPerformed && config.enableSuccessSound) {
             playSuccessSound();
         }
     }
@@ -721,9 +852,9 @@ public class ArmorHotkeysClient implements ClientModInitializer {
      * Used when armor is successfully equipped, unequipped, or swapped.
      */
     private void playSuccessSound() {
-        if (client.player != null) {
+        if (client.player != null && config.enableSuccessSound) {
             PlayerEntity player = client.player;
-            player.playSound(SoundEvents.BLOCK_NOTE_BLOCK_BELL.value(), 0.8F, 1.0F);
+            player.playSound(SoundEvents.BLOCK_NOTE_BLOCK_BELL.value(), config.getSoundVolumeFloat(), 1.0F);
         }
     }
 
@@ -732,9 +863,9 @@ public class ArmorHotkeysClient implements ClientModInitializer {
      * Used when there's no space in inventory, no elytra available, or other failures.
      */
     private void playErrorSound() {
-        if (client.player != null) {
+        if (client.player != null && config.enableErrorSound) {
             PlayerEntity player = client.player;
-            player.playSound(SoundEvents.ENTITY_ITEM_BREAK.value(), 1.0F, 0.8F);
+            player.playSound(SoundEvents.ENTITY_ITEM_BREAK.value(), config.getSoundVolumeFloat(), 0.8F);
         }
     }
 }
