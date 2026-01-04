@@ -39,16 +39,16 @@ A Minecraft Fabric mod that adds convenient hotkeys for quickly managing your ar
 ## Installation
 
 ### Prerequisites
-- **Minecraft Version**: 1.21.1
+- **Minecraft Version**: 1.21.11
 - **Fabric Loader**: ≥ 0.18.4
 - **Fabric API**: ≥ 0.140.2
 
 ### Installation Steps
 1. **Install Fabric Loader**
-   - Download and install [Fabric Loader 0.18.4](https://fabricmc.net/use/) for Minecraft 1.21.1
+   - Download and install [Fabric Loader 0.18.4](https://fabricmc.net/use/) for Minecraft 1.21.11
 
 2. **Install Fabric API**
-   - Download [Fabric API 0.140.2+1.21.1](https://www.curseforge.com/minecraft/mc-mods/fabric-api) for Minecraft 1.21.1
+   - Download [Fabric API 0.140.2+1.21.11](https://www.curseforge.com/minecraft/mc-mods/fabric-api) for Minecraft 1.21.11
 
 3. **Install Armor Hotkeys**
    - Download the latest `SheadsArmorHotkeys-1.1.1.jar` from [Releases](https://github.com/shead0shead/armor-hotkeys/releases)
@@ -77,13 +77,13 @@ Key bindings can be changed in Minecraft's standard Controls menu:
 
 ## Compatibility
 
-- **Minecraft Version**: 1.21.1 (Fabric)
+- **Minecraft Version**: 1.21.11 (Fabric)
 - **Mod Type**: Client-side only - no server installation required
 - **Mod Compatibility**: Compatible with most inventory and armor mods
 
 ## Requirements
 
-- **Minecraft**: 1.21.1
+- **Minecraft**: 1.21.11
 - **Fabric Loader**: ≥ 0.18.4
 - **Fabric API**: ≥ 0.140.2
 
