@@ -8,5 +8,24 @@
   "key.armorhotkeys.unequip_all": "Unequip all armor",
 
   "message.armorhotkeys.no_inventory_space": "§cNo space in inventory!",
-  "message.armorhotkeys.no_elytra": "§cNo elytra in inventory!"
+  "message.armorhotkeys.no_elytra": "§cNo elytra in inventory!",
+
+  "text.autoconfig.sheadarmorhotkeys.title": "Shead's Armor Hotkeys",
+
+  "text.autoconfig.sheadarmorhotkeys.option.enableSuccessSound.@PrefixText": "Notifications and Sounds Settings",
+  "text.autoconfig.sheadarmorhotkeys.option.enableSuccessSound": "Enable success sound",
+  "text.autoconfig.sheadarmorhotkeys.option.enableErrorSound": "Enable error sound",
+  "text.autoconfig.sheadarmorhotkeys.option.showNotifications": "Show text notifications",
+  "text.autoconfig.sheadarmorhotkeys.option.soundVolume": "Sound volume",
+
+  "text.autoconfig.sheadarmorhotkeys.option.enableMemorySystem.@PrefixText": "Functionality Settings",
+  "text.autoconfig.sheadarmorhotkeys.option.enableMemorySystem": "Enable memory system",
+  "text.autoconfig.sheadarmorhotkeys.option.requireEmptyCursor": "Require empty cursor",
+
+  "text.autoconfig.sheadarmorhotkeys.option.enableEquipAllKey.@PrefixText": "Hotkey Settings",
+  "text.autoconfig.sheadarmorhotkeys.option.enableEquipAllKey": "Enable 'Equip all armor' key",
+  "text.autoconfig.sheadarmorhotkeys.option.enableUnequipAllKey": "Enable 'Unequip all armor' key",
+  "text.autoconfig.sheadarmorhotkeys.option.enableSwapChestKey": "Enable 'Change elytra/chestplate' key",
+  "text.autoconfig.sheadarmorhotkeys.option.enableElytraOnlyKey": "Enable 'Equip only elytra' key",
+  "text.autoconfig.sheadarmorhotkeys.option.enableElytraArmorKey": "Enable 'Equip elytra with armor' key"
 }

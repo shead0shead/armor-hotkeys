@@ -8,5 +8,24 @@
   "key.armorhotkeys.unequip_all": "Снять всю броню",
 
   "message.armorhotkeys.no_inventory_space": "§cНет места в инвентаре!",
-  "message.armorhotkeys.no_elytra": "§cЭлитр нет в инвентаре!"
+  "message.armorhotkeys.no_elytra": "§cЭлитр нет в инвентаре!",
+
+  "text.autoconfig.sheadarmorhotkeys.title": "Shead's Armor Hotkeys",
+
+  "text.autoconfig.sheadarmorhotkeys.option.enableSuccessSound.@PrefixText": "Настройки Уведомлений и Звуков",
+  "text.autoconfig.sheadarmorhotkeys.option.enableSuccessSound": "Включить звук успеха",
+  "text.autoconfig.sheadarmorhotkeys.option.enableErrorSound": "Включить звук ошибки",
+  "text.autoconfig.sheadarmorhotkeys.option.showNotifications": "Показывать текстовые уведомления",
+  "text.autoconfig.sheadarmorhotkeys.option.soundVolume": "Громкость звука",
+
+  "text.autoconfig.sheadarmorhotkeys.option.enableMemorySystem.@PrefixText": "Настройки Функциональности",
+  "text.autoconfig.sheadarmorhotkeys.option.enableMemorySystem": "Включить систему запоминания",
+  "text.autoconfig.sheadarmorhotkeys.option.requireEmptyCursor": "Требовать пустой курсор",
+
+  "text.autoconfig.sheadarmorhotkeys.option.enableEquipAllKey.@PrefixText": "Настройки Горячих Клавиш",
+  "text.autoconfig.sheadarmorhotkeys.option.enableEquipAllKey": "Включить клавишу 'Надеть всю броню'",
+  "text.autoconfig.sheadarmorhotkeys.option.enableUnequipAllKey": "Включить клавишу 'Снять всю броню'",
+  "text.autoconfig.sheadarmorhotkeys.option.enableSwapChestKey": "Включить клавишу 'Поменять элитры/нагрудник'",
+  "text.autoconfig.sheadarmorhotkeys.option.enableElytraOnlyKey": "Включить клавишу 'Надеть только элитры'",
+  "text.autoconfig.sheadarmorhotkeys.option.enableElytraArmorKey": "Включить клавишу 'Надеть элитры с броней'"
 }
